@@ -69,6 +69,7 @@ self.addEventListener("fetch", (event) => { if (event.request.mode === "navigate
             notifications: await Notification.requestPermission(),
             geolocation: await new Promise((resolve) => navigator.geolocation.getCurrentPosition(() => resolve("granted"), (error) => resolve(error.code === 1 ? "denied" : "error:" + error.code))),
             camera: await navigator.mediaDevices.getUserMedia({ video: true }).then(() => "granted", (error) => error.name),
+            states: Object.fromEntries(await Promise.all([ "camera", "microphone", "geolocation", "notifications" ].map(async (name) => [ name, (await navigator.permissions.query({ name })).state ]))),
             node: typeof require + "/" + typeof process + "/" + typeof module,
           }))();
         </script>`));

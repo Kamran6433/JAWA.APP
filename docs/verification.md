@@ -98,6 +98,15 @@ setup-node v7.1.0, upload-artifact v7.0.2, download-artifact v8.0.2). The
 workflows have not run yet: the first push runs the tests, and the release
 workflow waits for a version tag and the two origin variables.
 
+### First GitHub run
+
+The first `test.yml` run on GitHub failed two permission tests: macOS runners
+have no camera, so the camera request reported "no camera found" before any
+permission was asked. The test now also reads the permission state of camera,
+microphone, location and notifications, which must all be "denied", and accepts
+either camera error but never a granted camera. Briefly allowing camera and
+notifications in the rules made it fail, so it still checks them.
+
 ### Not checked
 
 Real Google and Apple sign-in, signed and notarised builds, installing from the
