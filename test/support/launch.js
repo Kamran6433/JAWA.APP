@@ -2,8 +2,9 @@ import { _electron as electron } from "@playwright/test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-export const APP_ROOT = new URL("../../", import.meta.url).pathname;
+export const APP_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 
 export function freshProfile() {
   return mkdtempSync(join(tmpdir(), "jawa-apps-test-"));

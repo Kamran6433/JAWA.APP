@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { extractFile, listPackage } from "@electron/asar";
 import { FuseV1Options, FuseVersion, getCurrentFuseWire } from "@electron/fuses";
 import { startFakeSite } from "../support/fake-site.js";
@@ -12,7 +13,7 @@ import { startFakeSite } from "../support/fake-site.js";
 //   JAWA_FOOD_ORIGIN=https://food.jawa.invalid node scripts/build.js pos --dir --unsigned
 const kind = process.env.JAWA_PACKAGE_KIND ?? "pos";
 const names = { pos: "JAWA POS", food: "JAWA.FOOD" };
-const bundle = join(new URL("../../", import.meta.url).pathname, "dist", kind, `mac-${process.arch}`, `${names[kind]}.app`);
+const bundle = join(fileURLToPath(new URL("../../", import.meta.url)), "dist", kind, `mac-${process.arch}`, `${names[kind]}.app`);
 const archive = join(bundle, "Contents/Resources/app.asar");
 const executable = join(bundle, "Contents/MacOS", names[kind]);
 const built = process.platform === "darwin" && existsSync(archive);

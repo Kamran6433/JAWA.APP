@@ -1,5 +1,21 @@
 # Verification record
 
+## Windows-safe test paths, version 0.1.1 (4 November 2026)
+
+The first release run (`v0.1.0`) failed on the Windows runner before building:
+`test/unit/strings.test.js` turned a file URL into a path with `.pathname`, which
+on Windows gives `/D:/...` and an impossible `D:\D:\...` folder. All three such
+paths now use `fileURLToPath`, and `test.yml` runs the unit tests on Windows too.
+The end-to-end checks read the app version from `package.json` instead of
+`0.1.0`, and the version is now 0.1.1 (the `v0.1.0` tag has no release).
+
+| Check | Result |
+| --- | --- |
+| `npm test` | **96 tests**, 0 failures |
+| `npm run test:e2e` | **33 tests**, 0 failures (3 failed at 0.1.1 before they read the version) |
+| `npm run test:package` (existing POS build) | 5 passed, 1 skipped |
+| `fileURLToPath` on the CI path, Windows rules | `D:\a\JAWA.APP\JAWA.APP\src\` |
+
 ## Release JAWA POS only (4 November 2026)
 
 On `claude/release-pos-only`. A shipped app now needs only the origins it uses

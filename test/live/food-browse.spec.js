@@ -12,7 +12,7 @@ test("FOOD opens its live home page in its own window and keeps other sites out"
   const { app, window, openedInBrowser } = await launchApp({ kind: "food", origins: { food: foodOrigin, pos: posOrigin } });
   await expect(window).toHaveURL(`${foodOrigin}/`);
   await expect(window).toHaveTitle(/JAWA/);
-  expect(await window.evaluate(() => navigator.userAgent)).toMatch(/ JAWADesktop\/0\.1\.0 \(food\)$/);
+  expect(await window.evaluate(() => navigator.userAgent)).toMatch(/ JAWADesktop\/\d+\.\d+\.\d+ \(food\)$/);
 
   await window.evaluate(() => { location.href = "https://site.jawa.example/"; }).catch(() => {});
   await expect.poll(openedInBrowser).toEqual([ "https://site.jawa.example/" ]);

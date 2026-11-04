@@ -1,6 +1,11 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { startFakeSite } from "../support/fake-site.js";
 import { freshProfile, launchApp } from "../support/launch.js";
+
+// The running app reports package.json's version, so these checks follow each release.
+const { version } = JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8"));
+const identifiesAs = (kind) => new RegExp(` JAWADesktop/${version.replaceAll(".", "\\.")} \\(${kind}\\)$`);
 
 let site;
 test.beforeEach(async () => { site = await startFakeSite({ title: "Fake POS" }); });
@@ -42,7 +47,8 @@ test("tells the server which JAWA desktop app is asking", async () => {
   const { app, window } = await launchApp({ kind: "pos", origins: { pos: site.origin } });
   await window.goto(`${site.origin}/headers`);
   const agent = await window.locator("#agent").textContent();
-  expect(agent).toMatch(/ Chrome\/[\d.]+ Electron\/[\d.]+ Safari\/537\.36 JAWADesktop\/0\.1\.0 \(pos\)$/);
+  expect(agent).toMatch(/ Chrome\/[\d.]+ Electron\/[\d.]+ Safari\/537\.36 JAWADesktop\//);
+  expect(agent).toMatch(identifiesAs("pos"));
   expect(agent).not.toMatch(/JAWA POS\/|jawa-apps\//);
   await app.close();
 });
@@ -54,7 +60,7 @@ test("the app still identifies itself after a form post and its redirect", async
   await expect(window.locator("#where")).toHaveText("Headers");
   const [ post, redirected ] = site.requests.filter((request) => [ "/echo-redirect", "/headers" ].includes(request.path));
   expect(post.method).toBe("POST");
-  for (const request of [ post, redirected ]) expect(request.headers["user-agent"]).toMatch(/ JAWADesktop\/0\.1\.0 \(pos\)$/);
+  for (const request of [ post, redirected ]) expect(request.headers["user-agent"]).toMatch(identifiesAs("pos"));
   await app.close();
 });
 
@@ -66,8 +72,8 @@ test("pages loaded through the site's service worker still identify the app", as
   await expect(window.locator("#where")).toHaveText("Headers");
   const throughWorker = site.requests.filter((request) => request.path === "/headers").at(-1);
   expect(throughWorker.headers["service-worker"] ?? null).toBeNull();
-  expect(throughWorker.headers["user-agent"]).toMatch(/ JAWADesktop\/0\.1\.0 \(pos\)$/);
-  expect(await window.evaluate(() => navigator.userAgent)).toMatch(/ JAWADesktop\/0\.1\.0 \(pos\)$/);
+  expect(throughWorker.headers["user-agent"]).toMatch(identifiesAs("pos"));
+  expect(await window.evaluate(() => navigator.userAgent)).toMatch(identifiesAs("pos"));
   await app.close();
 });
 
