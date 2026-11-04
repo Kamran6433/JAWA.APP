@@ -1,5 +1,21 @@
 # Verification record
 
+## Release JAWA POS only (4 November 2026)
+
+On `claude/release-pos-only`. A shipped app now needs only the origins it uses
+(POS its own; FOOD its own and POS), and the release workflow builds and publishes
+JAWA POS alone. The two new unit tests failed first (a POS build demanded FOOD).
+
+| Check | Result |
+| --- | --- |
+| `npm test` | **96 tests**, 0 failures |
+| `npm run test:e2e` | **33 tests**, 0 failures |
+| `JAWA_POS_ORIGIN=https://jawa.menu node scripts/build.js pos --dir --unsigned`, no FOOD origin set | Built; manifest `{"kind":"pos","origins":{"pos":"https://jawa.menu"}}` |
+| `npm run test:package` on that build | 5 passed, 1 skipped (launch check needs `JAWA_PACKAGE_LAUNCH=1`) |
+
+The Windows installer and the release itself were not built locally; the
+release workflow builds them on GitHub runners.
+
 ## First version: JAWA POS and JAWA.FOOD desktop apps (4 November 2026)
 
 Node 22.23.3, Electron 44.10.0, electron-builder 26.17.0, Playwright 1.64.1, on

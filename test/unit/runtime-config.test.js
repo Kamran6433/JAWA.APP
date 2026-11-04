@@ -28,16 +28,27 @@ test("a packaged app refuses missing, insecure or malformed bundled settings", (
     { kind: "site", origins: productionOrigins },
     { kind: "pos", origins: { ...productionOrigins, pos: "http://pos.jawa.example" } },
     { kind: "pos", origins: { ...productionOrigins, pos: "http://localhost:3000" } },
-    { kind: "pos", origins: { ...productionOrigins, food: undefined } },
-    { kind: "pos", origins: { ...productionOrigins, food: "https://food.jawa.example/path" } },
-    { kind: "pos", origins: { ...productionOrigins, food: "https://food.jawa.example/?q=1" } },
-    { kind: "pos", origins: { ...productionOrigins, food: "https://food.jawa.example/#top" } },
-    { kind: "pos", origins: { ...productionOrigins, food: "https://user:pass@food.jawa.example" } },
-    { kind: "pos", origins: { ...productionOrigins, food: "javascript:alert(1)" } },
-    { kind: "pos", origins: { ...productionOrigins, food: 42 } },
+    { kind: "pos", origins: { food: productionOrigins.food } },
+    { kind: "food", origins: { ...productionOrigins, food: undefined } },
+    { kind: "food", origins: { ...productionOrigins, pos: undefined } },
+    { kind: "food", origins: { ...productionOrigins, food: "https://food.jawa.example/path" } },
+    { kind: "food", origins: { ...productionOrigins, food: "https://food.jawa.example/?q=1" } },
+    { kind: "food", origins: { ...productionOrigins, food: "https://food.jawa.example/#top" } },
+    { kind: "food", origins: { ...productionOrigins, food: "https://user:pass@food.jawa.example" } },
+    { kind: "food", origins: { ...productionOrigins, pos: "javascript:alert(1)" } },
+    { kind: "food", origins: { ...productionOrigins, food: 42 } },
   ];
   for (const bundled of cases) {
     assert.throws(() => resolveRuntimeConfig({ isPackaged: true, bundled, env: {} }), ConfigurationError, JSON.stringify(bundled));
+  }
+});
+
+test("a packaged POS app needs and keeps only its own origin, ignoring any other", () => {
+  for (const origins of [ { pos: productionOrigins.pos }, { ...productionOrigins, food: "javascript:alert(1)" } ]) {
+    const config = resolveRuntimeConfig({ isPackaged: true, bundled: { kind: "pos", origins }, env: {} });
+    assert.deepEqual(config.origins, { pos: "https://pos.jawa.example" });
+    assert.deepEqual(config.trustedOrigins, [ "https://pos.jawa.example" ]);
+    assert.equal(config.homeUrl, "https://pos.jawa.example/");
   }
 });
 

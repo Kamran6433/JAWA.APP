@@ -49,9 +49,10 @@ export function resolveRuntimeConfig({ isPackaged, env = {}, bundled = null }) {
 
 function packagedSettings(bundled) {
   if (!bundled || typeof bundled !== "object") throw new ConfigurationError("This build has no bundled settings");
+  const kind = knownKind(bundled.kind);
   return {
-    kind: knownKind(bundled.kind),
-    origins: originsFrom((kind) => bundled.origins?.[kind], { allowLocalHttp: false }),
+    kind,
+    origins: originsFrom(neededKinds(kind), (name) => bundled.origins?.[name], { allowLocalHttp: false }),
     userDataDirectory: null,
     showWindows: true,
     registerProtocol: true,
@@ -61,6 +62,7 @@ function packagedSettings(bundled) {
 function developmentSettings(env) {
   const kind = knownKind(env.JAWA_APP ?? "pos");
   const origins = originsFrom(
+    APP_KINDS,
     (name) => env[`JAWA_${name.toUpperCase()}_ORIGIN`] ?? `http://localhost:${appFor(name).developmentPort}`,
     { allowLocalHttp: true },
   );
@@ -73,8 +75,14 @@ function developmentSettings(env) {
   return { kind, origins, userDataDirectory, showWindows: env.JAWA_SHOW_WINDOWS !== "0", registerProtocol: env.JAWA_REGISTER_PROTOCOL === "1" };
 }
 
-function originsFrom(lookup, options) {
-  return Object.fromEntries(APP_KINDS.map((kind) => {
+// A shipped app carries only the origins it uses: its own site and, for an app
+// that signs in through JAWA ID, POS. So a POS build needs no FOOD address.
+function neededKinds(kind) {
+  return [ ...new Set([ kind, ...(appFor(kind).signsInThroughIdentity ? [ "pos" ] : []) ]) ];
+}
+
+function originsFrom(kinds, lookup, options) {
+  return Object.fromEntries(kinds.map((kind) => {
     const value = lookup(kind);
     if (typeof value !== "string") throw new ConfigurationError(`Missing the ${kind} origin`);
     return [ kind, normalizeOrigin(value, options) ];
