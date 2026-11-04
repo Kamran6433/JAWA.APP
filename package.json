@@ -1,7 +1,7 @@
 {
   "name": "jawa-apps",
   "productName": "JAWA",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Desktop apps for JAWA POS and JAWA.FOOD: each opens its live site in its own window.",
   "license": "UNLICENSED",

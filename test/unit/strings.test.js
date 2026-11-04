@@ -2,9 +2,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { translator } from "../../src/strings.js";
 
-const sourceDirectory = new URL("../../src/", import.meta.url).pathname;
+const sourceDirectory = fileURLToPath(new URL("../../src/", import.meta.url));
 
 test("English text is returned for a key, with values filled in", () => {
   const t = translator("en");
