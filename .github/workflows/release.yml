@@ -87,10 +87,14 @@ jobs:
         with:
           path: installers
           merge-multiple: true
+      # Each build uploads files from dist/pos only, so the artifacts hold them
+      # without folders and merge-multiple puts all three straight in installers/.
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          files=(installers/JAWA-POS-mac.dmg installers/JAWA-POS-mac.zip installers/JAWA-POS-windows.exe)
+          ls -l "${files[@]}"
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
             --title "JAWA POS desktop app $GITHUB_REF_NAME" --generate-notes \
-            installers/*/JAWA-*
+            "${files[@]}"
