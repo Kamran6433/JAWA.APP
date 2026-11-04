@@ -1,0 +1,96 @@
+# Verification record
+
+## First version: JAWA POS and JAWA.FOOD desktop apps (4 November 2026)
+
+Node 22.23.3, Electron 44.10.0, electron-builder 26.17.0, Playwright 1.64.1, on
+macOS (Apple silicon). All tests used fictional data. Nothing was signed,
+published or deployed.
+
+| Check | Result |
+| --- | --- |
+| `npm test` (rules, settings, menus, text, offline page, sign-in links, build config) | **93 tests**, 0 failures |
+| `npm run test:e2e` (real Electron against a fake site, windows hidden) | **33 tests**, 0 failures; three consecutive full runs |
+| `npm run test:package` on built POS and FOOD apps | POS **6/6** including the launch check; FOOD 5/5 (launch check skipped) |
+| Live: real app and a separate Chrome against local POS (`test/live/pos-sign-in.spec.js`) | **2/2** |
+| Live: real FOOD app against local FOOD (`test/live/food-browse.spec.js`) | **1/1** |
+| Installers | `JAWA POS-0.1.0-universal.dmg` and `.zip`; `JAWA POS Setup 0.1.0.exe` (x64 and ARM) built from fictional `.invalid` origins |
+| `npm audit --omit=dev` | 0 vulnerabilities (nothing is shipped from npm) |
+
+### Test first
+
+- **Security rules.** Stubs copying Electron's defaults (allow every navigation,
+  grant every permission, trust any link carrying a code, read settings from the
+  environment) failed **23 of 29** navigation, permission, sign-in-link and
+  settings tests. The six that passed are cases where the defaults happen to be
+  right, such as keeping the app's own pages in the app.
+- **SITE removed.** After the product owner said JAWA.SITE stays website-only,
+  the updated app and settings tests failed 9 of 17 before the definitions changed.
+- **Service worker.** The first live run showed POS's waiting page treating the
+  app as an ordinary browser. POS's service worker fetches page loads, and
+  Electron gives worker requests the app-wide default user agent, not the
+  session's. A new fake-site worker test reproduced it (`JAWAPOS/0.1.0 … Electron/44.10.0`
+  with no `JAWADesktop` token); setting `app.userAgentFallback` fixed it.
+- **Installer architectures** (universal macOS; Windows x64 and ARM): 1 build
+  configuration test failed first. The rest of the build configuration was
+  written together with its tests rather than strictly red-first.
+- **Help menu.** A review found the Help menu calling an action the app never
+  supplied. A test that clicks every menu action failed first; there are no help
+  pages yet, so the item was removed.
+- **Test harness, not app, failures** were fixed in the tests and are recorded
+  here rather than hidden. Playwright's click waits for a navigation that the app
+  deliberately cancels, so clicks that leave the app use `noWaitAfter`, and the
+  page is then read directly. `getLastWebPreferences()` does not report
+  `partition`, so tests compare sessions instead. One permission test passed
+  `undefined`, which picked up the helper's default page.
+
+### Packaged app
+
+`npm run test:package` reads the built app:
+
+- The archive holds only `package.json` and `src/**/*.js`: no tests, scripts,
+  icons source, `node_modules` or environment files.
+- The manifest carries only the app kind and the two HTTPS origins. A scan for
+  private keys, client secrets, encryption keys, Stripe, Resend, AWS and database
+  URLs found none.
+- `Info.plist` registers `com.jawa.pos` and the `jawa-pos` scheme.
+- Fuses: Node mode, `NODE_OPTIONS` and debugging flags off; cookie encryption,
+  archive integrity and archive-only loading on. A control on plain development
+  Electron reads Node mode and debugging on, so the check discriminates. The
+  Windows build reads the same fuses.
+- Launched with `ELECTRON_RUN_AS_NODE=1`, `NODE_OPTIONS`, `--inspect=0`, another
+  `JAWA_APP` and a `JAWA_POS_ORIGIN` pointing at a fake server, the app started
+  as itself, printed nothing from Node, and made **no request** to the fake
+  server. The profile folder this launch created was removed afterwards.
+
+### Live checks
+
+POS ran on port 4100 against a throwaway database (`jawa_pos_desktop_check`)
+holding one fictional business, owner and till login, created from structure
+with a generated password that was never printed. FOOD ran on port 4101 against
+its existing development database, read-only. Both servers were stopped after.
+
+- **Sign in with your browser:** in the app, the button opened the browser link;
+  a separate headless Chrome signed in with the password, saw *Open JAWA POS on
+  this computer?* with the account's email, and returned a `jawa-pos://` link.
+  Delivering it to the app opened the business list as that owner. Delivering the
+  same link again returned the app to sign-in.
+- **Password in the app:** signed in, then stayed signed in after restarting the
+  app on the same profile.
+- **FOOD:** opened FOOD's live home page under its own user agent; JAWA.SITE's
+  address went to the browser and the window stayed on FOOD.
+
+### Dependencies
+
+Electron 44.9.0 had a high-severity advisory (GHSA-jr5w-w6x2-84p9); the app
+uses **44.10.0**, the oldest fixed 44.x. `npm audit` still lists moderate
+advisories in electron-builder's own build-time dependencies (`glob`,
+`minimatch` and the packages that use them). They run only on the build machine
+and are not shipped. Re-check before each release.
+
+### Not checked
+
+Real Google and Apple sign-in, signed and notarised builds, installing from the
+`.dmg` and `.exe` on clean Macs and Windows PCs, Windows itself (the Windows
+build was only produced and inspected from macOS), `jawa-*` link registration by
+the installed app, receipt printing through QZ Tray and the caller-ID chooser
+with real hardware, screen readers, and automatic updates (not built).
