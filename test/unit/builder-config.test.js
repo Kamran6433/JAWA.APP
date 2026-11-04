@@ -59,6 +59,17 @@ test("macOS and Windows installers are described; nothing is signed or published
   assert.equal(config.mac.identity, undefined);
 });
 
+test("installers keep the same file names in every release, so download links never change", () => {
+  const pos = builderConfig({ kind: "pos", origins });
+  const food = builderConfig({ kind: "food", origins });
+  assert.equal(pos.dmg.artifactName, "JAWA-POS-mac.dmg");
+  assert.equal(pos.mac.artifactName, "JAWA-POS-mac.${ext}");
+  assert.equal(pos.nsis.artifactName, "JAWA-POS-windows.exe");
+  assert.equal(food.dmg.artifactName, "JAWA-FOOD-mac.dmg");
+  assert.equal(food.mac.artifactName, "JAWA-FOOD-mac.${ext}");
+  assert.equal(food.nsis.artifactName, "JAWA-FOOD-windows.exe");
+});
+
 test("an unsigned local build can be requested explicitly", () => {
   assert.equal(builderConfig({ kind: "pos", origins, unsigned: true }).mac.identity, null);
 });

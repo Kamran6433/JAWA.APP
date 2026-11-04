@@ -98,19 +98,48 @@ the app and cannot be changed by flags or environment variables later.
 Every build turns on Electron's security fuses: no Node mode, no `NODE_OPTIONS`,
 no debugging flags, encrypted cookies, and only the signed app archive can load.
 
+Installers always have the same names: `JAWA-POS-mac.dmg`, `JAWA-POS-mac.zip`,
+`JAWA-POS-windows.exe` and the same for `JAWA-FOOD`.
+
+## Release and download
+
+The POS and FOOD landing pages have a download button that links to
+`https://github.com/Kamran6433/JAWA.APP/releases/latest/download/<installer>`,
+picking Mac or Windows from the visitor's browser. Each site can point elsewhere
+with `JAWA_DESKTOP_DOWNLOADS_URL`.
+
+To publish a release:
+
+1. In this repository's **Settings → Secrets and variables → Actions → Variables**,
+   set `JAWA_POS_ORIGIN` and `JAWA_FOOD_ORIGIN` to the production HTTPS addresses.
+2. Optionally add signing secrets: `MAC_CSC_LINK`, `MAC_CSC_KEY_PASSWORD`,
+   `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`, `WIN_CSC_LINK`,
+   `WIN_CSC_KEY_PASSWORD`. Without them the installers are unsigned.
+3. Set `version` in `package.json`, commit, then push a matching tag:
+   `git tag v0.1.0 && git push origin v0.1.0`.
+
+`.github/workflows/release.yml` tests and builds both apps on macOS and Windows
+runners, then publishes a GitHub release with the six installers.
+`.github/workflows/test.yml` runs the unit and end-to-end tests on every push to
+`main` and on pull requests.
+
+**The landing-page buttons only work for the public once the release is publicly
+downloadable.** Release files of a private repository need a GitHub sign-in with
+access. Either make this repository public (it holds nothing secret; see "What is
+in the download"), or host the installers elsewhere and set
+`JAWA_DESKTOP_DOWNLOADS_URL` on POS and FOOD.
+
 ### Before the first public release
 
 - **Production addresses** of POS and FOOD (not yet recorded in any repository).
 - **Bundle identifiers** `com.jawa.pos` and `com.jawa.food`: confirm or change
   them before release, because changing them later makes a different app.
-- **Signing.** macOS needs an Apple Developer ID certificate and notarisation
-  (electron-builder's `CSC_LINK`, `CSC_KEY_PASSWORD`, `APPLE_ID`,
-  `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`, set privately on the build
-  machine). Windows needs a code-signing certificate, or SmartScreen will warn.
-  Unsigned builds are for testing only.
-- **Where people download them**, and whether to add automatic app updates.
-  The sites update themselves; the shell rarely changes, but security updates
-  to Electron still need shipping.
+- **Signing.** macOS needs an Apple Developer ID certificate and notarisation;
+  Windows needs a code-signing certificate, or SmartScreen will warn. Unsigned
+  builds open only after the person overrides a security warning.
+- **Updates.** The sites update themselves; the shell rarely changes, but
+  Electron security updates still need a new release. Automatic app updates are
+  not built yet.
 - Check sign-in, the till, printing and caller ID on real Macs and Windows PCs.
 
 ## Layout

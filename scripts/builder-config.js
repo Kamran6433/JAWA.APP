@@ -10,6 +10,8 @@ const CATEGORIES = { pos: "public.app-category.business", food: "public.app-cate
 export function builderConfig({ kind, origins, unsigned = false }) {
   const config = resolveRuntimeConfig({ isPackaged: true, bundled: { kind, origins } });
   const { app } = config;
+  // Fixed names: the POS and FOOD landing pages link to .../releases/latest/download/<name>.
+  const fileStem = `JAWA-${app.kind.toUpperCase()}`;
   return {
     appId: app.appId,
     productName: app.name,
@@ -39,10 +41,12 @@ export function builderConfig({ kind, origins, unsigned = false }) {
       target: [ { target: "dmg", arch: [ "universal" ] }, { target: "zip", arch: [ "universal" ] } ],
       hardenedRuntime: true,
       darkModeSupport: true,
+      artifactName: `${fileStem}-mac.\${ext}`,
       ...(unsigned ? { identity: null } : {}),
     },
+    dmg: { artifactName: `${fileStem}-mac.dmg` },
     win: { target: [ { target: "nsis", arch: [ "x64", "arm64" ] } ] },
-    nsis: { oneClick: true, perMachine: false },
+    nsis: { oneClick: true, perMachine: false, artifactName: `${fileStem}-windows.exe` },
     publish: null,
   };
 }

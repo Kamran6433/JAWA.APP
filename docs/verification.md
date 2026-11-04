@@ -8,7 +8,7 @@ published or deployed.
 
 | Check | Result |
 | --- | --- |
-| `npm test` (rules, settings, menus, text, offline page, sign-in links, build config) | **93 tests**, 0 failures |
+| `npm test` (rules, settings, menus, text, offline page, sign-in links, build config) | **94 tests**, 0 failures |
 | `npm run test:e2e` (real Electron against a fake site, windows hidden) | **33 tests**, 0 failures; three consecutive full runs |
 | `npm run test:package` on built POS and FOOD apps | POS **6/6** including the launch check; FOOD 5/5 (launch check skipped) |
 | Live: real app and a separate Chrome against local POS (`test/live/pos-sign-in.spec.js`) | **2/2** |
@@ -86,6 +86,17 @@ uses **44.10.0**, the oldest fixed 44.x. `npm audit` still lists moderate
 advisories in electron-builder's own build-time dependencies (`glob`,
 `minimatch` and the packages that use them). They run only on the build machine
 and are not shipped. Re-check before each release.
+
+### Release files and workflows
+
+Installers now keep fixed names so the POS and FOOD landing pages can link to
+the latest release. The build configuration test failed first, then passed; a
+local FOOD build produced `JAWA-FOOD-mac.dmg`, `JAWA-FOOD-mac.zip` and
+`JAWA-FOOD-windows.exe`. `.github/workflows/test.yml` and `release.yml` parse as
+YAML; GitHub-provided actions are pinned to commits (checkout v7.0.1,
+setup-node v7.1.0, upload-artifact v7.0.2, download-artifact v8.0.2). The
+workflows have not run yet: the first push runs the tests, and the release
+workflow waits for a version tag and the two origin variables.
 
 ### Not checked
 
