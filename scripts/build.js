@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 // Builds one desktop app:
 //
-//   JAWA_POS_ORIGIN=https://… JAWA_FOOD_ORIGIN=https://… node scripts/build.js pos [--dir] [--mac|--win] [--unsigned]
+//   JAWA_POS_ORIGIN=https://… node scripts/build.js pos [--dir] [--mac|--win] [--unsigned]
+//   JAWA_POS_ORIGIN=https://… JAWA_FOOD_ORIGIN=https://… node scripts/build.js food …
+//
+// Each app needs only the origins it uses: POS its own, FOOD its own and POS.
 //
 // --dir stops at the unpacked app (for checks); --unsigned skips macOS signing
 // for a local build. Signing and notarisation use electron-builder's own

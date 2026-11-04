@@ -1,9 +1,11 @@
-# Pushing a tag such as v0.1.0 (matching package.json) builds JAWA POS and
-# JAWA.FOOD for macOS and Windows and publishes them as a GitHub release.
-# The POS and FOOD landing pages link to
+# Pushing a tag such as v0.1.0 (matching package.json) builds JAWA POS for
+# macOS and Windows and publishes it as a GitHub release. POS's landing page
+# links to its own /download/<platform>, which redirects to
 # https://github.com/<owner>/JAWA.APP/releases/latest/download/<file>.
+# JAWA.FOOD has no desktop release: customers use the website, and phone apps
+# are planned separately.
 #
-# Repository variables (public values): JAWA_POS_ORIGIN, JAWA_FOOD_ORIGIN.
+# Repository variable (public value): JAWA_POS_ORIGIN.
 # Optional secrets for signing: MAC_CSC_LINK, MAC_CSC_KEY_PASSWORD, APPLE_ID,
 # APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID, WIN_CSC_LINK, WIN_CSC_KEY_PASSWORD.
 # Without them the installers are unsigned (see README).
@@ -33,7 +35,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       JAWA_POS_ORIGIN: ${{ vars.JAWA_POS_ORIGIN }}
-      JAWA_FOOD_ORIGIN: ${{ vars.JAWA_FOOD_ORIGIN }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -42,15 +43,15 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
-      - name: Check the tag and the production addresses
+      - name: Check the tag and the production address
         shell: bash
         run: |
           expected="v$(node -p 'require("./package.json").version')"
           if [ "$GITHUB_REF_NAME" != "$expected" ]; then echo "::error::Tag $GITHUB_REF_NAME does not match package.json ($expected)"; exit 1; fi
-          if [ -z "$JAWA_POS_ORIGIN" ] || [ -z "$JAWA_FOOD_ORIGIN" ]; then echo "::error::Set the repository variables JAWA_POS_ORIGIN and JAWA_FOOD_ORIGIN"; exit 1; fi
+          if [ -z "$JAWA_POS_ORIGIN" ]; then echo "::error::Set the repository variable JAWA_POS_ORIGIN"; exit 1; fi
       - run: npm ci
       - run: npm test
-      - name: Build JAWA POS and JAWA.FOOD
+      - name: Build JAWA POS
         shell: bash
         env:
           CSC_LINK: ${{ matrix.os == 'macos-latest' && secrets.MAC_CSC_LINK || secrets.WIN_CSC_LINK }}
@@ -66,14 +67,14 @@ jobs:
             export CSC_IDENTITY_AUTO_DISCOVERY=false
             unset CSC_LINK CSC_KEY_PASSWORD
           fi
-          for app in pos food; do node scripts/build.js "$app" $PLATFORM $signing; done
+          node scripts/build.js pos $PLATFORM $signing
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: installers-${{ runner.os }}
           path: |
-            dist/*/JAWA-*-mac.dmg
-            dist/*/JAWA-*-mac.zip
-            dist/*/JAWA-*-windows.exe
+            dist/pos/JAWA-POS-mac.dmg
+            dist/pos/JAWA-POS-mac.zip
+            dist/pos/JAWA-POS-windows.exe
           if-no-files-found: error
 
   publish:
@@ -91,5 +92,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
-            --title "JAWA desktop apps $GITHUB_REF_NAME" --generate-notes \
+            --title "JAWA POS desktop app $GITHUB_REF_NAME" --generate-notes \
             installers/*/JAWA-*

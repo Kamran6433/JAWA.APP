@@ -27,6 +27,13 @@ test("the shipped app carries only its kind and the public HTTPS origins", () =>
   assert.deepEqual(Object.keys(config.extraMetadata).sort(), [ "jawa", "main", "name", "productName" ]);
 });
 
+test("a POS build needs and ships only POS's origin", () => {
+  for (const given of [ { pos: "https://pos.jawa.example" }, origins ]) {
+    assert.deepEqual(builderConfig({ kind: "pos", origins: given }).extraMetadata.jawa, { kind: "pos", origins: { pos: "https://pos.jawa.example" } });
+  }
+  assert.throws(() => builderConfig({ kind: "pos", origins: { food: origins.food } }), ConfigurationError);
+});
+
 test("only the app's own source and manifest go into the package", () => {
   const config = builderConfig({ kind: "pos", origins });
   assert.deepEqual(config.files, [ "package.json", "src/**/*.js", "!**/*.map" ]);
@@ -77,6 +84,6 @@ test("an unsigned local build can be requested explicitly", () => {
 test("refuses SITE, unknown apps and anything but HTTPS origins", () => {
   assert.throws(() => builderConfig({ kind: "site", origins }), ConfigurationError);
   assert.throws(() => builderConfig({ kind: "pos", origins: { ...origins, pos: "http://pos.jawa.example" } }), ConfigurationError);
-  assert.throws(() => builderConfig({ kind: "pos", origins: { ...origins, food: "http://localhost:3001" } }), ConfigurationError);
-  assert.throws(() => builderConfig({ kind: "pos", origins: { pos: origins.pos } }), ConfigurationError);
+  assert.throws(() => builderConfig({ kind: "food", origins: { ...origins, food: "http://localhost:3001" } }), ConfigurationError);
+  assert.throws(() => builderConfig({ kind: "food", origins: { food: origins.food } }), ConfigurationError);
 });
