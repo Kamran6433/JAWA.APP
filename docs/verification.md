@@ -1,5 +1,20 @@
 # Verification record
 
+## First release, v0.1.1, and the publish step (4 November 2026)
+
+The `v0.1.1` run built both installers (macOS waited about five minutes for a
+runner, because GitHub's macOS arm64 runners were short of capacity), but its
+publish step found no files: since the uploads became exact `dist/pos/...` paths,
+the artifacts hold the installers without a folder, so `installers/*/JAWA-*`
+matched nothing. The release was published by hand from that run's artifacts
+(digests checked by `gh run download`), with the workflow's own command. The
+mounted `JAWA-POS-mac.dmg` holds a universal (x86_64, arm64) `JAWA POS.app`,
+version 0.1.1, ad-hoc signed, whose manifest is
+`{"kind":"pos","origins":{"pos":"https://jawa.menu"}}`; the `.exe` is an NSIS
+installer. The publish step now names the three files and fails clearly if one
+is missing; a local run of that shell logic found all three and failed when one
+was removed.
+
 ## Windows-safe test paths, version 0.1.1 (4 November 2026)
 
 The first release run (`v0.1.0`) failed on the Windows runner before building:
