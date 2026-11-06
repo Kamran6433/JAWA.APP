@@ -4,12 +4,12 @@ import { launchApp } from "../support/launch.js";
 // The real JAWA.FOOD desktop app against a real local FOOD. Customer sign-in
 // waits for FOOD-8; this checks browsing, the window and outbound links.
 const foodOrigin = process.env.JAWA_LIVE_FOOD_ORIGIN;
-const posOrigin = process.env.JAWA_LIVE_POS_ORIGIN ?? "http://localhost:3000";
+const menuOrigin = process.env.JAWA_LIVE_MENU_ORIGIN ?? "http://localhost:3000";
 
 test.skip(!foodOrigin, "Set JAWA_LIVE_FOOD_ORIGIN to a local FOOD server");
 
 test("FOOD opens its live home page in its own window and keeps other sites out", async () => {
-  const { app, window, openedInBrowser } = await launchApp({ kind: "food", origins: { food: foodOrigin, pos: posOrigin } });
+  const { app, window, openedInBrowser } = await launchApp({ kind: "food", origins: { food: foodOrigin, menu: menuOrigin } });
   await expect(window).toHaveURL(`${foodOrigin}/`);
   await expect(window).toHaveTitle(/JAWA/);
   expect(await window.evaluate(() => navigator.userAgent)).toMatch(/ JAWADesktop\/\d+\.\d+\.\d+ \(food\)$/);

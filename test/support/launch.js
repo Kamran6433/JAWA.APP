@@ -12,7 +12,7 @@ export function freshProfile() {
 
 // Launches the real, unpackaged app. Only "open in the browser" is replaced,
 // so tests record where links would go instead of opening Chrome.
-export async function launchApp({ kind = "pos", origins = {}, profile = freshProfile(), args = [] }) {
+export async function launchApp({ kind = "menu", origins = {}, profile = freshProfile(), args = [] }) {
   const env = { ...process.env, JAWA_APP: kind, JAWA_USER_DATA_DIR: profile, JAWA_SHOW_WINDOWS: "0" };
   delete env.JAWA_REGISTER_PROTOCOL;
   for (const [ name, origin ] of Object.entries(origins)) env[`JAWA_${name.toUpperCase()}_ORIGIN`] = origin;

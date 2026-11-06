@@ -3,7 +3,7 @@
   "productName": "JAWA",
   "version": "0.1.1",
   "private": true,
-  "description": "Desktop apps for JAWA POS and JAWA.FOOD: each opens its live site in its own window.",
+  "description": "Desktop apps for JAWA MENU and JAWA.FOOD: each opens its live site in its own window.",
   "license": "UNLICENSED",
   "type": "module",
   "main": "src/main.js",
@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "electron .",
-    "start:pos": "JAWA_APP=pos electron .",
+    "start:menu": "JAWA_APP=menu electron .",
     "start:food": "JAWA_APP=food electron .",
     "start:site": "JAWA_APP=site electron .",
     "test": "node --test test/unit/*.test.js",

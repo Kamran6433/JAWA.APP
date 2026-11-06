@@ -31,7 +31,7 @@ export function normalizeOrigin(value, { allowLocalHttp }) {
 export function resolveRuntimeConfig({ isPackaged, env = {}, bundled = null }) {
   const settings = isPackaged ? packagedSettings(bundled) : developmentSettings(env);
   const app = appFor(settings.kind);
-  const identityOrigin = settings.origins.pos;
+  const identityOrigin = settings.origins.menu;
   const trustedOrigins = [ ...new Set([ settings.origins[app.kind], ...(app.signsInThroughIdentity ? [ identityOrigin ] : []) ]) ];
   return Object.freeze({
     kind: app.kind,
@@ -60,7 +60,7 @@ function packagedSettings(bundled) {
 }
 
 function developmentSettings(env) {
-  const kind = knownKind(env.JAWA_APP ?? "pos");
+  const kind = knownKind(env.JAWA_APP ?? "menu");
   const origins = originsFrom(
     APP_KINDS,
     (name) => env[`JAWA_${name.toUpperCase()}_ORIGIN`] ?? `http://localhost:${appFor(name).developmentPort}`,
@@ -76,9 +76,9 @@ function developmentSettings(env) {
 }
 
 // A shipped app carries only the origins it uses: its own site and, for an app
-// that signs in through JAWA ID, POS. So a POS build needs no FOOD address.
+// that signs in through JAWA ID, MENU. So a MENU build needs no FOOD address.
 function neededKinds(kind) {
-  return [ ...new Set([ kind, ...(appFor(kind).signsInThroughIdentity ? [ "pos" ] : []) ]) ];
+  return [ ...new Set([ kind, ...(appFor(kind).signsInThroughIdentity ? [ "menu" ] : []) ]) ];
 }
 
 function originsFrom(kinds, lookup, options) {

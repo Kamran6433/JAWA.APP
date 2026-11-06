@@ -57,7 +57,7 @@ test("a web link can be copied or opened in the browser", () => {
 });
 
 test("script and file links can be copied but never opened", () => {
-  for (const linkURL of [ "javascript:alert(1)", "file:///etc/passwd", "jawa-pos://sign-in?code=x" ]) {
+  for (const linkURL of [ "javascript:alert(1)", "file:///etc/passwd", "jawa-menu://sign-in?code=x" ]) {
     assert.deepEqual(visible(build({ linkURL })).map((item) => item.label), [ t("context.copy_link") ], linkURL);
   }
 });

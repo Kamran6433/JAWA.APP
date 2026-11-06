@@ -1,7 +1,7 @@
 # Agent guidance
 
-Desktop shells for JAWA POS and JAWA.FOOD only; JAWA.SITE has no app. Read the
-README first. Server-side behaviour belongs in the JAWA.POS and JAWA.FOOD
+Desktop shells for JAWA MENU and JAWA.FOOD only; JAWA.SITE has no app. Read the
+README first. Server-side behaviour belongs in the JAWA.MENU and JAWA.FOOD
 repositories, not here.
 
 - Test first. Rules live in small pure modules under `src/` with `node --test`

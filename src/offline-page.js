@@ -1,7 +1,7 @@
 import { APPS } from "./apps.js";
 import { navigationDecision } from "./navigation-policy.js";
 
-// A self-contained page for when the app's own site can't be reached. POS's
+// A self-contained page for when the app's own site can't be reached. MENU's
 // own service worker still reopens the till offline; this covers the first
 // launch and the sites without offline support. It has no script, only a
 // timed retry of the page that failed.
@@ -20,8 +20,8 @@ export function loadFailure({ errorCode, isMainFrame, url, trustedOrigins }) {
 export function renderOfflinePage({ appName, retryUrl, failure, theme, t }) {
   const retry = webAddress(retryUrl);
   const colours = theme === "dark"
-    ? { background: APPS.pos.background.dark, text: "#f2f2f2", muted: "#b8bcc6", accent: "#c79ad0" }
-    : { background: APPS.pos.background.light, text: "#1d1d1f", muted: "#55575d", accent: "#8c5896" };
+    ? { background: APPS.menu.background.dark, text: "#f2f2f2", muted: "#b8bcc6", accent: "#c79ad0" }
+    : { background: APPS.menu.background.light, text: "#1d1d1f", muted: "#55575d", accent: "#8c5896" };
   const title = t(`offline.${failure}.title`, { app: appName });
   const body = t(`offline.${failure}.body`, { app: appName });
   const refresh = failure === "offline" ? `\n<meta http-equiv="refresh" content="${RETRY_SECONDS};url=${escape(retry)}">` : "";

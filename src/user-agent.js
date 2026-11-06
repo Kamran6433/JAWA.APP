@@ -3,7 +3,7 @@ import { appFor } from "./apps.js";
 // The apps identify themselves to the servers so the pages can offer
 // "Sign in with your browser". It is a presentation hint only: anyone can
 // send any user agent, so servers never treat it as proof of anything.
-export const DESKTOP_USER_AGENT_PATTERN = /\bJAWADesktop\/\d+\.\d+\.\d+ \((pos|food)\)/;
+export const DESKTOP_USER_AGENT_PATTERN = /\bJAWADesktop\/\d+\.\d+\.\d+ \((menu|food)\)/;
 
 export function desktopUserAgent(base, { version, kind }) {
   appFor(kind);

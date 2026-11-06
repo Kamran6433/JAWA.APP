@@ -1,11 +1,11 @@
-# Pushing a tag such as v0.1.0 (matching package.json) builds JAWA POS for
-# macOS and Windows and publishes it as a GitHub release. POS's landing page
+# Pushing a tag such as v0.1.0 (matching package.json) builds JAWA MENU for
+# macOS and Windows and publishes it as a GitHub release. MENU's landing page
 # links to its own /download/<platform>, which redirects to
 # https://github.com/<owner>/JAWA.APP/releases/latest/download/<file>.
 # JAWA.FOOD has no desktop release: customers use the website, and phone apps
 # are planned separately.
 #
-# Repository variable (public value): JAWA_POS_ORIGIN.
+# Repository variable (public value): JAWA_MENU_ORIGIN.
 # Optional secrets for signing: MAC_CSC_LINK, MAC_CSC_KEY_PASSWORD, APPLE_ID,
 # APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID, WIN_CSC_LINK, WIN_CSC_KEY_PASSWORD.
 # Without them the installers are unsigned (see README).
@@ -34,7 +34,7 @@ jobs:
             platform: "--win"
     runs-on: ${{ matrix.os }}
     env:
-      JAWA_POS_ORIGIN: ${{ vars.JAWA_POS_ORIGIN }}
+      JAWA_MENU_ORIGIN: ${{ vars.JAWA_MENU_ORIGIN }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -48,10 +48,10 @@ jobs:
         run: |
           expected="v$(node -p 'require("./package.json").version')"
           if [ "$GITHUB_REF_NAME" != "$expected" ]; then echo "::error::Tag $GITHUB_REF_NAME does not match package.json ($expected)"; exit 1; fi
-          if [ -z "$JAWA_POS_ORIGIN" ]; then echo "::error::Set the repository variable JAWA_POS_ORIGIN"; exit 1; fi
+          if [ -z "$JAWA_MENU_ORIGIN" ]; then echo "::error::Set the repository variable JAWA_MENU_ORIGIN"; exit 1; fi
       - run: npm ci
       - run: npm test
-      - name: Build JAWA POS
+      - name: Build JAWA MENU
         shell: bash
         env:
           CSC_LINK: ${{ matrix.os == 'macos-latest' && secrets.MAC_CSC_LINK || secrets.WIN_CSC_LINK }}
@@ -67,14 +67,14 @@ jobs:
             export CSC_IDENTITY_AUTO_DISCOVERY=false
             unset CSC_LINK CSC_KEY_PASSWORD
           fi
-          node scripts/build.js pos $PLATFORM $signing
+          node scripts/build.js menu $PLATFORM $signing
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: installers-${{ runner.os }}
           path: |
-            dist/pos/JAWA-POS-mac.dmg
-            dist/pos/JAWA-POS-mac.zip
-            dist/pos/JAWA-POS-windows.exe
+            dist/menu/JAWA-MENU-mac.dmg
+            dist/menu/JAWA-MENU-mac.zip
+            dist/menu/JAWA-MENU-windows.exe
           if-no-files-found: error
 
   publish:
@@ -87,14 +87,14 @@ jobs:
         with:
           path: installers
           merge-multiple: true
-      # Each build uploads files from dist/pos only, so the artifacts hold them
+      # Each build uploads files from dist/menu only, so the artifacts hold them
       # without folders and merge-multiple puts all three straight in installers/.
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          files=(installers/JAWA-POS-mac.dmg installers/JAWA-POS-mac.zip installers/JAWA-POS-windows.exe)
+          files=(installers/JAWA-MENU-mac.dmg installers/JAWA-MENU-mac.zip installers/JAWA-MENU-windows.exe)
           ls -l "${files[@]}"
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
-            --title "JAWA POS desktop app $GITHUB_REF_NAME" --generate-notes \
+            --title "JAWA MENU desktop app $GITHUB_REF_NAME" --generate-notes \
             "${files[@]}"

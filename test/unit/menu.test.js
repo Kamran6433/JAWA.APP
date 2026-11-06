@@ -6,7 +6,7 @@ import { translator } from "../../src/strings.js";
 const t = translator("en");
 const noop = () => {};
 const build = (overrides = {}) => buildMenuTemplate({
-  platform: "darwin", appName: "JAWA POS", isDevelopment: false, t,
+  platform: "darwin", appName: "JAWA MENU", isDevelopment: false, t,
   onHome: noop, onBack: noop, onForward: noop, ...overrides,
 });
 
@@ -16,13 +16,13 @@ const menu = (template, label) => template.find((item) => item.label === label);
 
 test("on a Mac the first menu is the app's own, named after it", () => {
   const template = build();
-  assert.equal(template[0].label, "JAWA POS");
+  assert.equal(template[0].label, "JAWA MENU");
   assert.deepEqual(template[0].submenu.map((item) => item.role ?? item.type), [ "about", "separator", "services", "separator", "hide", "hideOthers", "unhide", "separator", "quit" ]);
 });
 
 test("on Windows there is no Mac app menu and File offers Exit", () => {
   const template = build({ platform: "win32" });
-  assert.notEqual(template[0].label, "JAWA POS");
+  assert.notEqual(template[0].label, "JAWA MENU");
   assert.deepEqual(menu(template, "File").submenu.map((item) => item.role), [ "quit" ]);
   assert.ok(!roles(template).includes("services"));
 });
