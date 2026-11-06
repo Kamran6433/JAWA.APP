@@ -5,7 +5,8 @@
 # JAWA.FOOD has no desktop release: customers use the website, and phone apps
 # are planned separately.
 #
-# Repository variable (public value): JAWA_MENU_ORIGIN.
+# MENU's production address is https://jawa.menu; the repository variable
+# JAWA_MENU_ORIGIN (public value) replaces it when set.
 # Optional secrets for signing: MAC_CSC_LINK, MAC_CSC_KEY_PASSWORD, APPLE_ID,
 # APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID, WIN_CSC_LINK, WIN_CSC_KEY_PASSWORD.
 # Without them the installers are unsigned (see README).
@@ -34,7 +35,7 @@ jobs:
             platform: "--win"
     runs-on: ${{ matrix.os }}
     env:
-      JAWA_MENU_ORIGIN: ${{ vars.JAWA_MENU_ORIGIN }}
+      JAWA_MENU_ORIGIN: ${{ vars.JAWA_MENU_ORIGIN || 'https://jawa.menu' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
