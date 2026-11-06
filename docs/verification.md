@@ -1,5 +1,14 @@
 # Verification record
 
+## JAWA MENU icon and version 0.2.0 (6 November 2026)
+
+The product is now JAWA MENU. `apps/menu/icon.png` is MENU's `public/icon.png`
+with the label redrawn as "MENU" (same wordmark, colour and label height as the
+FOOD icon). The app id became `com.jawa.menu` and the installers `JAWA-MENU-*`,
+so the version is 0.2.0 and the installer installs beside an older app rather
+than over it. The release workflow uses `https://jawa.menu` when the repository
+variable `JAWA_MENU_ORIGIN` is not set.
+
 ## First release, v0.1.1, and the publish step (4 November 2026)
 
 The `v0.1.1` run built both installers (macOS waited about five minutes for a
