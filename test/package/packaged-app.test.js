@@ -9,10 +9,10 @@ import { FuseV1Options, FuseVersion, getCurrentFuseWire } from "@electron/fuses"
 import { startFakeSite } from "../support/fake-site.js";
 
 // Inspects a built macOS app. Build it first:
-//   CSC_IDENTITY_AUTO_DISCOVERY=false JAWA_POS_ORIGIN=https://pos.jawa.invalid \
-//   JAWA_FOOD_ORIGIN=https://food.jawa.invalid node scripts/build.js pos --dir --unsigned
-const kind = process.env.JAWA_PACKAGE_KIND ?? "pos";
-const names = { pos: "JAWA POS", food: "JAWA.FOOD" };
+//   CSC_IDENTITY_AUTO_DISCOVERY=false JAWA_MENU_ORIGIN=https://menu.jawa.invalid \
+//   JAWA_FOOD_ORIGIN=https://food.jawa.invalid node scripts/build.js menu --dir --unsigned
+const kind = process.env.JAWA_PACKAGE_KIND ?? "menu";
+const names = { menu: "JAWA MENU", food: "JAWA.FOOD" };
 const bundle = join(fileURLToPath(new URL("../../", import.meta.url)), "dist", kind, `mac-${process.arch}`, `${names[kind]}.app`);
 const archive = join(bundle, "Contents/Resources/app.asar");
 const executable = join(bundle, "Contents/MacOS", names[kind]);

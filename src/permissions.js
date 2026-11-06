@@ -3,7 +3,7 @@
 
 const EVERY_APP = [ "clipboard-sanitized-write", "fullscreen" ];
 const ALLOWED = Object.freeze({
-  pos: new Set([ ...EVERY_APP, "serial" ]), // USB/Bluetooth caller-ID adapter (Web Serial)
+  menu: new Set([ ...EVERY_APP, "serial" ]), // USB/Bluetooth caller-ID adapter (Web Serial)
   food: new Set(EVERY_APP),
 });
 

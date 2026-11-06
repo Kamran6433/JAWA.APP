@@ -6,7 +6,7 @@ test("FOOD signs in through the JAWA ID origin without leaving its window", asyn
   const food = await startFakeSite({ title: "Fake FOOD" });
   const identity = await startFakeSite({ title: "Fake JAWA ID" });
   food.useIdentity(identity.origin);
-  const { app, window, openedInBrowser } = await launchApp({ kind: "food", origins: { food: food.origin, pos: identity.origin } });
+  const { app, window, openedInBrowser } = await launchApp({ kind: "food", origins: { food: food.origin, menu: identity.origin } });
 
   await window.goto(`${food.origin}/sign-in`);
   await expect(window.locator("#where")).toHaveText("Signed in through JAWA ID");
@@ -18,17 +18,17 @@ test("FOOD signs in through the JAWA ID origin without leaving its window", asyn
   await identity.stop();
 });
 
-test("POS does not trust FOOD's site, and JAWA.SITE is just another website", async () => {
-  const pos = await startFakeSite({ title: "Fake POS" });
+test("MENU does not trust FOOD's site, and JAWA.SITE is just another website", async () => {
+  const menu = await startFakeSite({ title: "Fake MENU" });
   const food = await startFakeSite({ title: "Fake FOOD" });
-  const { app, window, openedInBrowser } = await launchApp({ kind: "pos", origins: { pos: pos.origin, food: food.origin } });
-  await expect(window.locator("#where")).toHaveText("Fake POS");
+  const { app, window, openedInBrowser } = await launchApp({ kind: "menu", origins: { menu: menu.origin, food: food.origin } });
+  await expect(window.locator("#where")).toHaveText("Fake MENU");
   await window.evaluate((target) => { location.href = target; }, `${food.origin}/`).catch(() => {});
   await expect.poll(openedInBrowser).toEqual([ `${food.origin}/` ]);
   await window.evaluate(() => { location.href = "https://site.jawa.example/businesses"; }).catch(() => {});
   await expect.poll(openedInBrowser).toEqual([ `${food.origin}/`, "https://site.jawa.example/businesses" ]);
-  expect(await heading(window)).toBe("Fake POS");
+  expect(await heading(window)).toBe("Fake MENU");
   await app.close();
-  await pos.stop();
+  await menu.stop();
   await food.stop();
 });

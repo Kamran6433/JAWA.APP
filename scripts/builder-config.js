@@ -5,12 +5,12 @@ import { resolveRuntimeConfig } from "../src/runtime-config.js";
 // them); signing identities and store credentials come from the build
 // machine's environment, never from here.
 
-const CATEGORIES = { pos: "public.app-category.business", food: "public.app-category.food-and-drink" };
+const CATEGORIES = { menu: "public.app-category.business", food: "public.app-category.food-and-drink" };
 
 export function builderConfig({ kind, origins, unsigned = false }) {
   const config = resolveRuntimeConfig({ isPackaged: true, bundled: { kind, origins } });
   const { app } = config;
-  // Fixed names: the POS and FOOD landing pages link to .../releases/latest/download/<name>.
+  // Fixed names: the MENU and FOOD landing pages link to .../releases/latest/download/<name>.
   const fileStem = `JAWA-${app.kind.toUpperCase()}`;
   return {
     appId: app.appId,

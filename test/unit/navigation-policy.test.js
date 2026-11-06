@@ -2,13 +2,13 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { SYSTEM_BROWSER_TARGET, externalUrl, navigationDecision, windowOpenDecision } from "../../src/navigation-policy.js";
 
-const trusted = [ "https://site.jawa.example", "https://pos.jawa.example" ];
+const trusted = [ "https://site.jawa.example", "https://menu.jawa.example" ];
 
 test("pages on the app's own sites stay in the app", () => {
   for (const url of [
     "https://site.jawa.example/",
     "https://site.jawa.example/businesses/12/edit?tab=menu#hours",
-    "https://pos.jawa.example/oauth/authorize?client_id=jawa-site",
+    "https://menu.jawa.example/oauth/authorize?client_id=jawa-site",
     "HTTPS://SITE.JAWA.EXAMPLE:443/businesses",
   ]) {
     assert.equal(navigationDecision(url, trusted), "allow", url);
@@ -19,7 +19,7 @@ test("other websites open in the person's browser", () => {
   for (const url of [
     "https://food.jawa.example/b/12",
     "https://site.jawa.example.attacker.test/",
-    "https://pos.jawa.example:8443/",
+    "https://menu.jawa.example:8443/",
     "http://site.jawa.example/",
     "https://checkout.stripe.com/c/pay/cs_test",
     "http://example.org/",
@@ -60,7 +60,7 @@ test("an empty trust list keeps nothing in the app", () => {
 });
 
 test("a new window for the app's own pages opens as another app window", () => {
-  assert.equal(windowOpenDecision({ url: "https://pos.jawa.example/console/settings", frameName: "" }, trusted), "window");
+  assert.equal(windowOpenDecision({ url: "https://menu.jawa.example/console/settings", frameName: "" }, trusted), "window");
   assert.equal(windowOpenDecision({ url: "https://site.jawa.example/terms", frameName: "_blank" }, trusted), "window");
 });
 
@@ -70,7 +70,7 @@ test("a new window for another site opens in the browser", () => {
 
 test("the jawa-browser target sends even the app's own pages to the browser", () => {
   assert.equal(SYSTEM_BROWSER_TARGET, "jawa-browser");
-  assert.equal(windowOpenDecision({ url: "https://pos.jawa.example/desktop/sign-in/browser/abc", frameName: "jawa-browser" }, trusted), "external");
+  assert.equal(windowOpenDecision({ url: "https://menu.jawa.example/desktop/sign-in/browser/abc", frameName: "jawa-browser" }, trusted), "external");
   assert.equal(windowOpenDecision({ url: "javascript:alert(1)", frameName: "jawa-browser" }, trusted), "deny");
   assert.equal(windowOpenDecision({ url: "file:///etc/hosts", frameName: "jawa-browser" }, trusted), "deny");
 });

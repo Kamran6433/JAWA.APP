@@ -6,7 +6,7 @@ let site;
 test.beforeEach(async () => { site = await startFakeSite(); });
 test.afterEach(async () => { await site.stop(); });
 
-for (const kind of [ "pos", "food" ]) {
+for (const kind of [ "menu", "food" ]) {
   test(`${kind}: notifications, location and camera are refused without asking`, async () => {
     const { app, window } = await launchApp({ kind, origins: { [kind]: site.origin } });
     await window.goto(`${site.origin}/permissions`);

@@ -45,7 +45,7 @@ export async function startFakeSite({ title = "Fake JAWA site", port = 0, otherO
         return redirect("/headers", 303);
       case "GET /script-opens-browser":
         return html(200, page("Waiting", `<a id="again" href="/desktop/sign-in/browser/fictional-request" target="jawa-browser">Again</a><script>window.open("/desktop/sign-in/browser/fictional-request", "jawa-browser", "noopener")</script>`));
-      // A service worker that fetches page loads itself, as POS's does.
+      // A service worker that fetches page loads itself, as MENU's does.
       case "GET /with-worker":
         return html(200, page("Worker page", `<a id="through-worker" href="/headers">Headers</a><script>navigator.serviceWorker.register("/worker.js")</script>`));
       case "GET /worker.js":

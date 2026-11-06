@@ -5,9 +5,9 @@ import { heading, launchApp } from "../support/launch.js";
 let site;
 let launched;
 test.beforeEach(async () => {
-  site = await startFakeSite({ title: "Fake POS" });
-  launched = await launchApp({ kind: "pos", origins: { pos: site.origin } });
-  await expect(launched.window.locator("#where")).toHaveText("Fake POS");
+  site = await startFakeSite({ title: "Fake MENU" });
+  launched = await launchApp({ kind: "menu", origins: { menu: site.origin } });
+  await expect(launched.window.locator("#where")).toHaveText("Fake MENU");
 });
 test.afterEach(async () => {
   await launched.app.close();
@@ -23,7 +23,7 @@ test("a link to the app's own page stays in the app", async () => {
 test("a link to another website opens in the browser and the app stays put", async () => {
   await launched.window.click("#external", { noWaitAfter: true });
   await expect.poll(launched.openedInBrowser).toEqual([ "https://example.org/menu" ]);
-  expect(await heading(launched.window)).toBe("Fake POS");
+  expect(await heading(launched.window)).toBe("Fake MENU");
 });
 
 test("another JAWA app's site opens in the browser too", async () => {
@@ -39,14 +39,14 @@ test("email links go to the mail app", async () => {
 test("a local file link does nothing", async () => {
   await launched.window.click("#file", { noWaitAfter: true });
   await launched.window.waitForTimeout(500);
-  expect(await heading(launched.window)).toBe("Fake POS");
+  expect(await heading(launched.window)).toBe("Fake MENU");
   expect(await launched.openedInBrowser()).toEqual([]);
 });
 
 test("a server redirect to another website opens it in the browser instead", async () => {
   await launched.window.click("#redirect", { noWaitAfter: true });
   await expect.poll(launched.openedInBrowser).toEqual([ "https://example.org/after-redirect" ]);
-  expect(await heading(launched.window)).toBe("Fake POS");
+  expect(await heading(launched.window)).toBe("Fake MENU");
 });
 
 test("the app's own page in a new window opens as another app window", async () => {
@@ -55,7 +55,7 @@ test("the app's own page in a new window opens as another app window", async () 
   expect(launched.app.windows()).toHaveLength(2);
   const windows = await launched.app.evaluate(({ BrowserWindow, session }) => BrowserWindow.getAllWindows().map((win) => ({
     preferences: win.webContents.getLastWebPreferences(),
-    sharesAppStorage: win.webContents.session === session.fromPartition("persist:jawa-pos"),
+    sharesAppStorage: win.webContents.session === session.fromPartition("persist:jawa-menu"),
   })));
   for (const { preferences, sharesAppStorage } of windows) {
     expect(preferences).toMatchObject({ sandbox: true, contextIsolation: true, nodeIntegration: false, webviewTag: false });
@@ -78,7 +78,7 @@ test("the jawa-browser target opens even the app's own page in the browser", asy
   expect(launched.app.windows()).toHaveLength(1);
 });
 
-test("a script opening the jawa-browser window sends it to the browser, as POS's waiting page does", async () => {
+test("a script opening the jawa-browser window sends it to the browser, as MENU's waiting page does", async () => {
   await launched.window.goto(`${site.origin}/script-opens-browser`);
   await expect.poll(launched.openedInBrowser).toEqual([ `${site.origin}/desktop/sign-in/browser/fictional-request` ]);
   expect(launched.app.windows()).toHaveLength(1);

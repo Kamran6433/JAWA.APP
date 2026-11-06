@@ -26,7 +26,7 @@ export function startDesktopApp(config) {
   app.setPath("userData", config.userDataDirectory ?? join(app.getPath("appData"), definition.name));
   app.enableSandbox();
   // Service workers use the app-wide default rather than the session's agent,
-  // and POS's worker fetches page loads, so set both.
+  // and MENU's worker fetches page loads, so set both.
   app.userAgentFallback = desktopUserAgent(app.userAgentFallback, { version: app.getVersion(), kind: config.kind });
   if (!app.requestSingleInstanceLock()) {
     app.quit();

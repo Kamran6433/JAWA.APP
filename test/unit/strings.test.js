@@ -10,7 +10,7 @@ const sourceDirectory = fileURLToPath(new URL("../../src/", import.meta.url));
 test("English text is returned for a key, with values filled in", () => {
   const t = translator("en");
   assert.equal(t("menu.home"), "Home");
-  assert.equal(t("menu.about", { app: "JAWA POS" }), "About JAWA POS");
+  assert.equal(t("menu.about", { app: "JAWA MENU" }), "About JAWA MENU");
 });
 
 test("a missing key, a missing value or an unknown language fails loudly", () => {
